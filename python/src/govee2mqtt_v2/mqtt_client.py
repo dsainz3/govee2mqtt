@@ -50,6 +50,7 @@ class MqttClient:
             payload_str = json.dumps(payload)
         else:
             payload_str = payload
+        logger.debug("MQTT publish: %s retain=%s", topic, retain)
         self._client.publish(topic, payload_str, retain=retain)
 
     def publish_discovery(self, topic: str, payload: dict) -> None:
@@ -61,6 +62,7 @@ class MqttClient:
             return
         logger.info("Connected to MQTT broker")
         command_topic = f"{self._base_topic}/+/+/set"
+        logger.debug("MQTT subscribe: %s", command_topic)
         client.subscribe(command_topic)
 
     def _on_message(self, client: mqtt.Client, userdata: object, msg: mqtt.MQTTMessage) -> None:
@@ -68,6 +70,7 @@ class MqttClient:
             return
         topic = msg.topic
         payload = msg.payload.decode("utf-8") if msg.payload else ""
+        logger.debug("MQTT message: %s", topic)
         parts = topic.split("/")
         if len(parts) < 3:
             return

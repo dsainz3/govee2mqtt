@@ -38,9 +38,11 @@ class GoveeApiClient:
     def _request(
         self, method: str, url: str, *, json: dict[str, Any] | None = None
     ) -> dict[str, Any]:
+        logger.debug("API request: %s %s", method, url)
         backoff = 1.0
         for attempt in range(1, self._max_retries + 1):
             response = self._client.request(method, url, json=json)
+            logger.debug("API response: %s %s -> %s", method, url, response.status_code)
             if response.status_code == 429:
                 retry_after = response.headers.get("Retry-After")
                 if retry_after and retry_after.isdigit():

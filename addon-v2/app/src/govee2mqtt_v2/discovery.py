@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 from .hass import device_slug, sensor_entities
 from .models import Device
 
 DISCOVERY_PREFIX = "homeassistant"
+logger = logging.getLogger(__name__)
 
 
 def _device_info(device: Device) -> dict[str, Any]:
@@ -34,6 +36,7 @@ def light_discovery_payload(device: Device, base_topic: str) -> tuple[str, dict[
         "color_temp": True,
         "device": _device_info(device),
     }
+    logger.debug("Discovery light: %s -> %s", device.name, topic)
     return topic, payload
 
 
@@ -50,6 +53,7 @@ def switch_discovery_payload(device: Device, base_topic: str) -> tuple[str, dict
         "command_topic": command_topic,
         "device": _device_info(device),
     }
+    logger.debug("Discovery switch: %s -> %s", device.name, topic)
     return topic, payload
 
 
@@ -82,4 +86,5 @@ def sensor_discovery_payloads(device: Device, base_topic: str) -> list[tuple[str
                 "device": _device_info(device),
             }
         payloads.append((topic, payload))
+        logger.debug("Discovery sensor: %s %s -> %s", device.name, instance, topic)
     return payloads

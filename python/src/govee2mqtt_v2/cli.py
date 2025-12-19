@@ -9,7 +9,11 @@ from typing import Any
 
 from .api import GoveeApiClient
 from .config import load_config
-from .discovery import light_discovery_payload, sensor_discovery_payloads, switch_discovery_payload
+from .discovery import (
+    light_discovery_payload,
+    sensor_discovery_payloads,
+    switch_discovery_payload,
+)
 from .hass import (
     device_slug,
     is_light,
@@ -31,6 +35,7 @@ def _setup_logging(level: str) -> None:
         level=getattr(logging, level.upper(), logging.INFO),
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     )
+    logger.info("Log level set to %s", level.lower())
 
 
 def _print_dry_run(devices: list) -> None:
@@ -94,9 +99,11 @@ def _handle_command(
         except json.JSONDecodeError:
             logger.warning("Invalid JSON payload for light command: %s", payload)
             return
+        logger.debug("Handling light command for %s: %s", device_id, data)
         for cap_type, instance, value in light_command_to_capabilities(data):
             api.control_device(device, capability_type=cap_type, instance=instance, value=value)
     elif entity == "switch":
+        logger.debug("Handling switch command for %s: %s", device_id, payload)
         for cap_type, instance, value in switch_command_to_capabilities(payload):
             api.control_device(device, capability_type=cap_type, instance=instance, value=value)
     else:
@@ -115,6 +122,12 @@ def main() -> int:
 
     config = load_config(dry_run=args.dry_run)
     _setup_logging(config.log_level)
+    logger.info(
+        "Starting govee2mqtt-v2 dry_run=%s poll_interval=%ss mqtt_base=%s",
+        args.dry_run,
+        config.poll_interval_seconds,
+        config.mqtt_base_topic,
+    )
 
     api = GoveeApiClient(config.govee_api_key, base_url=config.api_base_url)
     try:
@@ -148,6 +161,7 @@ def main() -> int:
     mqtt.connect()
 
     device_map = {device_slug(device): device for device in devices}
+    logger.info("Discovered %d devices", len(devices))
     _publish_discovery(mqtt, config.mqtt_base_topic, devices)
 
     try:
@@ -156,7 +170,11 @@ def main() -> int:
             for device in devices:
                 while not command_queue.empty():
                     _handle_command(
-                        api, mqtt, config.mqtt_base_topic, device_map, command_queue.get()
+                        api,
+                        mqtt,
+                        config.mqtt_base_topic,
+                        device_map,
+                        command_queue.get(),
                     )
 
                 state = api.get_device_state(device)

@@ -54,7 +54,9 @@ def is_light(device: Device) -> bool:
     )
     has_temp = (
         _find_capability(
-            device.capabilities, "devices.capabilities.color_setting", "colorTemperatureK"
+            device.capabilities,
+            "devices.capabilities.color_setting",
+            "colorTemperatureK",
         )
         is not None
     )
@@ -71,7 +73,10 @@ def is_switch(device: Device) -> bool:
 def sensor_entities(device: Device) -> list[dict[str, Any]]:
     entities: list[dict[str, Any]] = []
     for cap in device.capabilities:
-        if cap.type not in ("devices.capabilities.range", "devices.capabilities.property"):
+        if cap.type not in (
+            "devices.capabilities.range",
+            "devices.capabilities.property",
+        ):
             continue
         instance = cap.instance
         if instance in SENSOR_CAPABILITIES:
@@ -86,8 +91,14 @@ def sensor_entities(device: Device) -> list[dict[str, Any]]:
         elif instance in BINARY_SENSOR_CAPABILITIES:
             meta = BINARY_SENSOR_CAPABILITIES[instance]
             entities.append(
-                {"instance": instance, "device_class": meta["device_class"], "binary": True}
+                {
+                    "instance": instance,
+                    "device_class": meta["device_class"],
+                    "binary": True,
+                }
             )
+        else:
+            logger.debug("Unsupported sensor capability: %s", instance)
     return entities
 
 
@@ -136,7 +147,10 @@ def switch_state_from_device_state(state: DeviceState) -> str | None:
 def sensor_state_from_device_state(state: DeviceState) -> dict[str, Any]:
     payload: dict[str, Any] = {}
     for cap in state.capabilities:
-        if cap.type not in ("devices.capabilities.range", "devices.capabilities.property"):
+        if cap.type not in (
+            "devices.capabilities.range",
+            "devices.capabilities.property",
+        ):
             continue
         instance = cap.instance
         value = cap.state_value
