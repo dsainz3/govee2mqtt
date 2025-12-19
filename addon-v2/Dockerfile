@@ -5,13 +5,13 @@ ENV LANG C.UTF-8
 
 WORKDIR /app
 
-COPY python/pyproject.toml /app/pyproject.toml
-COPY python/README.md /app/README.md
-COPY python/src /app/src
+COPY app/pyproject.toml /app/pyproject.toml
+COPY app/README.md /app/README.md
+COPY app/src /app/src
 
 RUN pip install --no-cache-dir .
 
-COPY addon-v2/run.sh /run.sh
+COPY run.sh /run.sh
 RUN chmod +x /run.sh
 
 CMD ["/run.sh"]
