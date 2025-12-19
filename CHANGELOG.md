@@ -3,14 +3,19 @@
 All notable changes to the Python v2 implementation and HAOS add-on are
 documented here. This changelog is required to be updated for every change.
 
-## 0.1.11
+## 0.1.14
 
-- Default unknown capability data types to text entities so every capability is exposed.
-- Log a summary count of capability entities discovered at startup.
+- Add hands-off GitHub Actions automation for syncing, version bumps, CI, releases, and GHCR images.
+- Add local automation scripts and set pre-commit automation hooks to manual stage.
 
 ## 0.1.12
 
 - Set `object_id` for capability entities so entity IDs include `cap_<instance>` for easy search.
+
+## 0.1.11
+
+- Default unknown capability data types to text entities so every capability is exposed.
+- Log a summary count of capability entities discovered at startup.
 
 ## 0.1.10
 

@@ -55,3 +55,8 @@ poetry install
 poetry run pytest
 poetry run pre-commit run --all-files
 ```
+
+## Automation
+
+- GitHub Actions syncs `addon-v2/app` from `python/` and bumps patch versions + changelog.
+- GitHub Actions runs lint/tests and publishes releases/images from `main`.

@@ -42,6 +42,12 @@ poetry run pytest
 poetry run pre-commit run --all-files
 ```
 
+## Automation
+
+- GitHub Actions syncs `addon-v2/app`, bumps patch versions + changelog, and tags releases.
+- CI runs lint/tests on every PR and push to `main`.
+- Release workflow publishes GHCR images for both the Python app and add-on.
+
 ## Docker Build
 
 ```bash

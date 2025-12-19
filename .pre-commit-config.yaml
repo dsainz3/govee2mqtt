@@ -21,8 +21,21 @@ repos:
         args: ["--config", "python/pyproject.toml"]
   - repo: local
     hooks:
+      - id: sync-addon-v2
+        name: sync addon-v2 app from python sources
+        entry: python scripts/sync_addon_v2.py
+        language: system
+        pass_filenames: false
+        stages: ["manual"]
+      - id: bump-version
+        name: bump version + changelog
+        entry: python scripts/bump_version.py
+        language: system
+        pass_filenames: false
+        stages: ["manual"]
       - id: check-changelog
         name: check changelog
         entry: python scripts/check_changelog.py
         language: system
         pass_filenames: false
+        stages: ["manual"]
