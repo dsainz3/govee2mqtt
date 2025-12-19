@@ -179,28 +179,29 @@ def capability_entities(
             continue
         params = cap.parameters or {}
         data_type = params.get("dataType")
+        normalized_type = data_type.upper() if isinstance(data_type, str) else None
 
         entity_type: str | None = None
         if cap.type in ("devices.capabilities.on_off", "devices.capabilities.toggle"):
             entity_type = "switch"
-        elif data_type in ("BOOL", "BOOLEAN"):
+        elif normalized_type in ("BOOL", "BOOLEAN"):
             entity_type = "switch"
-        elif data_type == "ENUM":
+        elif normalized_type == "ENUM":
             entity_type = "select"
-        elif data_type in ("INTEGER", "FLOAT", "DOUBLE", "DECIMAL"):
+        elif normalized_type in ("INTEGER", "FLOAT", "DOUBLE", "DECIMAL", "LONG"):
             entity_type = "number"
-        elif data_type in ("STRUCT", "STRING"):
+        elif normalized_type in ("STRUCT", "STRING", "ARRAY", "LIST", "JSON", "OBJECT"):
             entity_type = "text"
-
-        if not entity_type:
-            logger.debug("Unsupported capability type: %s (%s)", cap.type, cap.instance)
-            continue
+        else:
+            entity_type = "text"
+            if normalized_type is None:
+                normalized_type = "UNKNOWN"
 
         entity: dict[str, Any] = {
             "instance": cap.instance,
             "capability_type": cap.type,
             "entity_type": entity_type,
-            "data_type": data_type,
+            "data_type": normalized_type,
             "parameters": params,
         }
 

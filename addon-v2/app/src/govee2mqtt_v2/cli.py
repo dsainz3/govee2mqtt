@@ -356,6 +356,15 @@ def main() -> int:
             logger.debug("DIY scene fetch failed for %s: %s", device.name, exc.response.status_code)
 
     capability_map, capability_options = _build_capability_maps(devices)
+    total_caps = sum(len(items) for items in capability_map.values())
+    if total_caps:
+        logger.info(
+            "Prepared %d capability entities across %d devices",
+            total_caps,
+            len(devices),
+        )
+    else:
+        logger.warning("No capability entities discovered; check device capabilities/dataType")
 
     if args.dry_run:
         _print_dry_run(devices)

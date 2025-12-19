@@ -3,6 +3,11 @@
 All notable changes to the Python v2 implementation and HAOS add-on are
 documented here. This changelog is required to be updated for every change.
 
+## 0.1.11
+
+- Default unknown capability data types to text entities so every capability is exposed.
+- Log a summary count of capability entities discovered at startup.
+
 ## 0.1.10
 
 - Publish capability entities for additional controls beyond base light/switch/sensor mappings.

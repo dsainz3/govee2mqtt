@@ -88,3 +88,22 @@ def test_capability_discovery_payloads() -> None:
     assert any("/number/" in topic for topic in topics)
     assert any("/select/" in topic for topic in topics)
     assert any("/text/" in topic for topic in topics)
+
+
+def test_capability_entities_unknown_datatype_defaults_to_text() -> None:
+    device = Device(
+        sku="H0001",
+        device="AA:BB:CC:DD:EE:FF:00:11",
+        name="Test Device",
+        device_type="devices.types.other",
+        capabilities=[
+            Capability(
+                type="devices.capabilities.work_mode",
+                instance="workMode",
+                parameters={},
+            )
+        ],
+    )
+    entities = capability_entities(device)
+    assert len(entities) == 1
+    assert entities[0]["entity_type"] == "text"
