@@ -3,6 +3,10 @@
 All notable changes to the Python v2 implementation and HAOS add-on are
 documented here. This changelog is required to be updated for every change.
 
+## 0.1.7
+
+- Wrap Platform API v2 control/state requests with requestId/payload to fix 400 responses.
+
 ## 0.1.6
 
 - Skip state polling for group/scene-like devices and those that return HTTP 400.

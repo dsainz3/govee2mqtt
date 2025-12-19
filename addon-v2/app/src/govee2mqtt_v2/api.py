@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import time
+import uuid
 from typing import Any
 
 import httpx
@@ -34,6 +35,12 @@ class GoveeApiClient:
 
     def close(self) -> None:
         self._client.close()
+
+    def _wrap_payload(self, payload: dict[str, Any]) -> dict[str, Any]:
+        return {
+            "requestId": str(uuid.uuid4()),
+            "payload": payload,
+        }
 
     def _request(
         self, method: str, url: str, *, json: dict[str, Any] | None = None
@@ -70,7 +77,7 @@ class GoveeApiClient:
         payload = self._request(
             "POST",
             "/device/state",
-            json={"device": device.device, "sku": device.sku},
+            json=self._wrap_payload({"device": device.device, "sku": device.sku}),
         )
         return parse_device_state(payload)
 
@@ -80,13 +87,15 @@ class GoveeApiClient:
         self._request(
             "POST",
             "/device/control",
-            json={
-                "device": device.device,
-                "sku": device.sku,
-                "capability": {
-                    "type": capability_type,
-                    "instance": instance,
-                    "value": value,
-                },
-            },
+            json=self._wrap_payload(
+                {
+                    "device": device.device,
+                    "sku": device.sku,
+                    "capability": {
+                        "type": capability_type,
+                        "instance": instance,
+                        "value": value,
+                    },
+                }
+            ),
         )
