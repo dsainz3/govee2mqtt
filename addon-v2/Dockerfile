@@ -14,3 +14,5 @@ RUN apk add --no-cache python3 py3-pip \
 
 COPY run.sh /etc/services.d/govee2mqtt/run
 RUN chmod +x /etc/services.d/govee2mqtt/run
+
+ENTRYPOINT ["/init"]
