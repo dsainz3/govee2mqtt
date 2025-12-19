@@ -7,6 +7,8 @@ import queue
 import time
 from typing import Any
 
+import httpx
+
 from .api import GoveeApiClient
 from .config import load_config
 from .discovery import (
@@ -101,11 +103,27 @@ def _handle_command(
             return
         logger.debug("Handling light command for %s: %s", device_id, data)
         for cap_type, instance, value in light_command_to_capabilities(data):
-            api.control_device(device, capability_type=cap_type, instance=instance, value=value)
+            try:
+                api.control_device(device, capability_type=cap_type, instance=instance, value=value)
+            except httpx.HTTPStatusError as exc:
+                logger.warning(
+                    "Light command failed for %s (%s): %s",
+                    device.name,
+                    device.sku,
+                    exc.response.status_code,
+                )
     elif entity == "switch":
         logger.debug("Handling switch command for %s: %s", device_id, payload)
         for cap_type, instance, value in switch_command_to_capabilities(payload):
-            api.control_device(device, capability_type=cap_type, instance=instance, value=value)
+            try:
+                api.control_device(device, capability_type=cap_type, instance=instance, value=value)
+            except httpx.HTTPStatusError as exc:
+                logger.warning(
+                    "Switch command failed for %s (%s): %s",
+                    device.name,
+                    device.sku,
+                    exc.response.status_code,
+                )
     else:
         logger.debug("Unsupported command entity: %s", entity)
         return
@@ -177,7 +195,16 @@ def main() -> int:
                         command_queue.get(),
                     )
 
-                state = api.get_device_state(device)
+                try:
+                    state = api.get_device_state(device)
+                except httpx.HTTPStatusError as exc:
+                    logger.warning(
+                        "State fetch failed for %s (%s): %s",
+                        device.name,
+                        device.sku,
+                        exc.response.status_code,
+                    )
+                    continue
                 _publish_state(mqtt, config.mqtt_base_topic, device, state)
 
                 time.sleep(max(1.0, config.poll_interval_seconds / max(1, len(devices))))

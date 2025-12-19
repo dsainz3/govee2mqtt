@@ -12,9 +12,17 @@ repos:
       - id: ruff
         args: ["--fix"]
       - id: ruff-format
+        args: ["--config", "python/pyproject.toml"]
   - repo: https://github.com/psf/black
     rev: 24.4.2
     hooks:
       - id: black
         language_version: python3.11
         args: ["--config", "python/pyproject.toml"]
+  - repo: local
+    hooks:
+      - id: check-changelog
+        name: check changelog
+        entry: python scripts/check_changelog.py
+        language: system
+        pass_filenames: false
