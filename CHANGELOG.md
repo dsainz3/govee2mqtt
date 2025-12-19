@@ -3,6 +3,11 @@
 All notable changes to the Python v2 implementation and HAOS add-on are
 documented here. This changelog is required to be updated for every change.
 
+## 0.1.6
+
+- Skip state polling for group/scene-like devices and those that return HTTP 400.
+- Log HTTP 400 response bodies at debug for easier API troubleshooting.
+
 ## 0.1.5
 
 - Allow HAOS add-on to auto-detect MQTT service when `mqtt_host` is unset.

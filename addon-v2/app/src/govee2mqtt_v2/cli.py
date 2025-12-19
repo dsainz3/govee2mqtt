@@ -32,6 +32,18 @@ from .mqtt_client import MqttClient
 logger = logging.getLogger(__name__)
 
 
+def _state_supported(device) -> bool:
+    if not device.capabilities:
+        return False
+    if device.device_type:
+        device_type = device.device_type.lower()
+        if "group" in device_type or "scene" in device_type:
+            return False
+    if device.sku and not device.sku.upper().startswith("H"):
+        return False
+    return True
+
+
 def _setup_logging(level: str) -> None:
     logging.basicConfig(
         level=getattr(logging, level.upper(), logging.INFO),
@@ -128,7 +140,17 @@ def _handle_command(
         logger.debug("Unsupported command entity: %s", entity)
         return
 
-    state = api.get_device_state(device)
+    try:
+        state = api.get_device_state(device)
+    except httpx.HTTPStatusError as exc:
+        logger.warning(
+            "State refresh failed for %s (%s): %s",
+            device.name,
+            device.sku,
+            exc.response.status_code,
+        )
+        logger.debug("State refresh error body for %s: %s", device.device, exc.response.text)
+        return
     _publish_state(mqtt, base_topic, device, state)
 
 
@@ -179,6 +201,11 @@ def main() -> int:
     mqtt.connect()
 
     device_map = {device_slug(device): device for device in devices}
+    unsupported_state_devices: set[str] = set()
+    for device in devices:
+        if not _state_supported(device):
+            unsupported_state_devices.add(device.device)
+            logger.debug("Skipping state polling for %s (%s)", device.name, device.sku)
     logger.info("Discovered %d devices", len(devices))
     _publish_discovery(mqtt, config.mqtt_base_topic, devices)
 
@@ -195,6 +222,9 @@ def main() -> int:
                         command_queue.get(),
                     )
 
+                if device.device in unsupported_state_devices:
+                    continue
+
                 try:
                     state = api.get_device_state(device)
                 except httpx.HTTPStatusError as exc:
@@ -204,6 +234,14 @@ def main() -> int:
                         device.sku,
                         exc.response.status_code,
                     )
+                    logger.debug("State error body for %s: %s", device.device, exc.response.text)
+                    if exc.response.status_code == 400:
+                        unsupported_state_devices.add(device.device)
+                        logger.info(
+                            "Skipping future state polls for %s (%s)",
+                            device.name,
+                            device.sku,
+                        )
                     continue
                 _publish_state(mqtt, config.mqtt_base_topic, device, state)
 
