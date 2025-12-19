@@ -21,7 +21,7 @@ Engineering-focused documentation for the Python implementation that uses the of
 - MQTT_PORT (default: 1883)
 - MQTT_USERNAME (optional)
 - MQTT_PASSWORD (optional)
-- MQTT_BASE_TOPIC (default: govee2mqtt)
+- MQTT_BASE_TOPIC (default: govee2mqtt_v2)
 - POLL_INTERVAL_SECONDS (default: 120)
 - LOG_LEVEL (default: info)
 - GOVEE_API_BASE_URL (default: https://openapi.api.govee.com/router/api/v1)

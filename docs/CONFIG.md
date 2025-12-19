@@ -12,7 +12,7 @@ Configuration is via environment variables only. Do not commit secrets.
 - MQTT_PORT (default 1883)
 - MQTT_USERNAME
 - MQTT_PASSWORD
-- MQTT_BASE_TOPIC (default govee2mqtt)
+- MQTT_BASE_TOPIC (default govee2mqtt_v2)
 - POLL_INTERVAL_SECONDS (default 120)
 - LOG_LEVEL (default info)
 - GOVEE_API_BASE_URL (default https://openapi.api.govee.com/router/api/v1)

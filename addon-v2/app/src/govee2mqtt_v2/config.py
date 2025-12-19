@@ -38,7 +38,7 @@ def load_config(*, dry_run: bool) -> Config:
     mqtt_port = int(_get_env("MQTT_PORT", "1883"))
     mqtt_username = _get_env("MQTT_USERNAME")
     mqtt_password = _get_env("MQTT_PASSWORD")
-    mqtt_base_topic = _get_env("MQTT_BASE_TOPIC", "govee2mqtt")
+    mqtt_base_topic = _get_env("MQTT_BASE_TOPIC", "govee2mqtt_v2")
     poll_interval_seconds = int(_get_env("POLL_INTERVAL_SECONDS", "120"))
     log_level = _get_env("LOG_LEVEL", "info")
     api_base_url = _get_env("GOVEE_API_BASE_URL", DEFAULT_API_BASE_URL)

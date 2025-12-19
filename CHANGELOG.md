@@ -3,6 +3,11 @@
 All notable changes to the Python v2 implementation and HAOS add-on are
 documented here. This changelog is required to be updated for every change.
 
+## 0.1.8
+
+- Default MQTT base topic to `govee2mqtt_v2` for side-by-side testing with v1.
+- Remove MQTT host/user/password options from the add-on; always auto-detect broker.
+
 ## 0.1.7
 
 - Wrap Platform API v2 control/state requests with requestId/payload to fix 400 responses.

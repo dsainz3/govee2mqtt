@@ -18,10 +18,6 @@ This doc describes the optional add-on wrapper for the Python implementation.
 | Add-on Option | Env Var |
 | --- | --- |
 | govee_api_key | GOVEE_API_KEY |
-| mqtt_host | MQTT_HOST |
-| mqtt_port | MQTT_PORT |
-| mqtt_username | MQTT_USERNAME |
-| mqtt_password | MQTT_PASSWORD |
 | mqtt_base_topic | MQTT_BASE_TOPIC |
 | poll_interval_seconds | POLL_INTERVAL_SECONDS |
 | log_level | LOG_LEVEL |
@@ -29,4 +25,4 @@ This doc describes the optional add-on wrapper for the Python implementation.
 ## Engineering Notes
 
 - The add-on is a thin wrapper; feature work belongs in `python/`.
-- Keep secrets in add-on options and never log them.
+- MQTT credentials are auto-detected from the broker service.

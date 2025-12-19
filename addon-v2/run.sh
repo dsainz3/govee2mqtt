@@ -29,29 +29,13 @@ fi
 
 export GOVEE_API_KEY="$(bashio::config 'govee_api_key')"
 
-if bashio::config.has_value mqtt_host ; then
-  export MQTT_HOST="$(bashio::config 'mqtt_host')"
-else
-  if ! wait_for_mqtt ; then
-    bashio::exit.nok "MQTT broker is not available and mqtt_host is not configured"
-  fi
-  export MQTT_HOST="$(bashio::services mqtt 'host')"
-  export MQTT_PORT="$(bashio::services mqtt 'port')"
-  export MQTT_USERNAME="$(bashio::services mqtt 'username')"
-  export MQTT_PASSWORD="$(bashio::services mqtt 'password')"
+if ! wait_for_mqtt ; then
+  bashio::exit.nok "MQTT broker is not available"
 fi
-
-if bashio::config.has_value mqtt_port ; then
-  export MQTT_PORT="$(bashio::config 'mqtt_port')"
-fi
-
-if bashio::config.has_value mqtt_username ; then
-  export MQTT_USERNAME="$(bashio::config 'mqtt_username')"
-fi
-
-if bashio::config.has_value mqtt_password ; then
-  export MQTT_PASSWORD="$(bashio::config 'mqtt_password')"
-fi
+export MQTT_HOST="$(bashio::services mqtt 'host')"
+export MQTT_PORT="$(bashio::services mqtt 'port')"
+export MQTT_USERNAME="$(bashio::services mqtt 'username')"
+export MQTT_PASSWORD="$(bashio::services mqtt 'password')"
 
 export MQTT_BASE_TOPIC="$(bashio::config 'mqtt_base_topic')"
 export POLL_INTERVAL_SECONDS="$(bashio::config 'poll_interval_seconds')"
