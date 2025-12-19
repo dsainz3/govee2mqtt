@@ -8,6 +8,10 @@ documented here. This changelog is required to be updated for every change.
 - Default unknown capability data types to text entities so every capability is exposed.
 - Log a summary count of capability entities discovered at startup.
 
+## 0.1.12
+
+- Set `object_id` for capability entities so entity IDs include `cap_<instance>` for easy search.
+
 ## 0.1.10
 
 - Publish capability entities for additional controls beyond base light/switch/sensor mappings.

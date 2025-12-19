@@ -112,6 +112,7 @@ def capability_discovery_payloads(
         payload: dict[str, Any] = {
             "name": f"{device.name} {instance}",
             "unique_id": f"govee2mqtt_v2_{slug}_cap_{instance}",
+            "object_id": object_id,
             "state_topic": state_topic,
             "command_topic": command_topic,
             "json_attributes_topic": attributes_topic,

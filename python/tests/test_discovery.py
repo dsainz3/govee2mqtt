@@ -88,6 +88,7 @@ def test_capability_discovery_payloads() -> None:
     assert any("/number/" in topic for topic in topics)
     assert any("/select/" in topic for topic in topics)
     assert any("/text/" in topic for topic in topics)
+    assert all(item["payload"].get("object_id") for item in payloads)
 
 
 def test_capability_entities_unknown_datatype_defaults_to_text() -> None:
