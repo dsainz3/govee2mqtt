@@ -12,7 +12,5 @@ COPY app/src /app/src
 RUN apk add --no-cache python3 py3-pip \
     && pip install --no-cache-dir .
 
-COPY run.sh /run.sh
-RUN chmod +x /run.sh
-
-CMD ["/run.sh"]
+COPY run.sh /etc/services.d/govee2mqtt/run
+RUN chmod +x /etc/services.d/govee2mqtt/run
