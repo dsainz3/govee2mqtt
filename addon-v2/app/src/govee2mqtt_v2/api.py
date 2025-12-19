@@ -7,7 +7,14 @@ from typing import Any
 
 import httpx
 
-from .models import Device, DeviceState, parse_device_list, parse_device_state
+from .models import (
+    Capability,
+    Device,
+    DeviceState,
+    parse_capabilities,
+    parse_device_list,
+    parse_device_state,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -80,6 +87,22 @@ class GoveeApiClient:
             json=self._wrap_payload({"device": device.device, "sku": device.sku}),
         )
         return parse_device_state(payload)
+
+    def get_device_scenes(self, device: Device) -> list[Capability]:
+        payload = self._request(
+            "POST",
+            "/device/scenes",
+            json=self._wrap_payload({"device": device.device, "sku": device.sku}),
+        )
+        return parse_capabilities(payload.get("payload", {}).get("capabilities", []))
+
+    def get_device_diy_scenes(self, device: Device) -> list[Capability]:
+        payload = self._request(
+            "POST",
+            "/device/diy-scenes",
+            json=self._wrap_payload({"device": device.device, "sku": device.sku}),
+        )
+        return parse_capabilities(payload.get("payload", {}).get("capabilities", []))
 
     def control_device(
         self, device: Device, *, capability_type: str, instance: str, value: Any

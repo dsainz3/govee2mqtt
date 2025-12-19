@@ -52,8 +52,9 @@ docker run --rm --env-file .env --network host govee2mqtt-v2
 ## Home Assistant Discovery
 
 - Discovery topics are retained under `homeassistant/...`.
-- State/command topics are under the configured base topic (default `govee2mqtt`).
+- State/command topics are under the configured base topic (default `govee2mqtt_v2`).
 - Light schema uses JSON payloads compatible with HA MQTT Light.
+- Capability entities are published for additional device capabilities (select/number/switch/text) beyond the base light/switch/sensor mapping.
 
 ## Limitations (MVP)
 

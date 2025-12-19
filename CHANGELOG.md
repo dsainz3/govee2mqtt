@@ -3,6 +3,17 @@
 All notable changes to the Python v2 implementation and HAOS add-on are
 documented here. This changelog is required to be updated for every change.
 
+## 0.1.10
+
+- Publish capability entities for additional controls beyond base light/switch/sensor mappings.
+- Expand capability handling for boolean/string/numeric data types and better scene metadata merging.
+- Serialize structured capability state values as JSON for MQTT consumers.
+
+## 0.1.9
+
+- Add generic capability entities (select/number/switch/text) for all device capabilities.
+- Load scene and DIY scene options from the Platform API and expose them in discovery.
+
 ## 0.1.8
 
 - Default MQTT base topic to `govee2mqtt_v2` for side-by-side testing with v1.

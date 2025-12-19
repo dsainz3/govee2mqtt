@@ -1,4 +1,9 @@
-from govee2mqtt_v2.discovery import light_discovery_payload, sensor_discovery_payloads
+from govee2mqtt_v2.discovery import (
+    capability_discovery_payloads,
+    light_discovery_payload,
+    sensor_discovery_payloads,
+)
+from govee2mqtt_v2.hass import capability_entities
 from govee2mqtt_v2.models import Capability, Device
 
 
@@ -42,3 +47,44 @@ def test_sensor_discovery_payload_temp_humidity() -> None:
     assert len(payloads) == 2
     topics = [topic for topic, _ in payloads]
     assert any("sensor" in topic for topic in topics)
+
+
+def test_capability_discovery_payloads() -> None:
+    device = Device(
+        sku="H6072",
+        device="AA:BB:CC:DD:AA:BB:CC:DD",
+        name="Floor Lamp",
+        device_type="devices.types.light",
+        capabilities=[
+            Capability(
+                type="devices.capabilities.toggle",
+                instance="gradientToggle",
+                parameters={"dataType": "ENUM"},
+            ),
+            Capability(
+                type="devices.capabilities.range",
+                instance="brightness",
+                parameters={"dataType": "INTEGER", "range": {"min": 1, "max": 100, "precision": 1}},
+            ),
+            Capability(
+                type="devices.capabilities.dynamic_scene",
+                instance="lightScene",
+                parameters={
+                    "dataType": "ENUM",
+                    "options": [{"name": "Sunrise", "value": {"id": 1}}],
+                },
+            ),
+            Capability(
+                type="devices.capabilities.music_setting",
+                instance="musicMode",
+                parameters={"dataType": "STRUCT", "fields": []},
+            ),
+        ],
+    )
+    entities = capability_entities(device)
+    payloads = capability_discovery_payloads(device, "govee2mqtt_v2", entities)
+    topics = [item["topic"] for item in payloads]
+    assert any("/switch/" in topic for topic in topics)
+    assert any("/number/" in topic for topic in topics)
+    assert any("/select/" in topic for topic in topics)
+    assert any("/text/" in topic for topic in topics)

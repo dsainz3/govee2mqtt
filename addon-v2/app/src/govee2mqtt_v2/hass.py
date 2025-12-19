@@ -106,7 +106,9 @@ def device_slug(device: Device) -> str:
     return device.device.replace(":", "").lower()
 
 
-def light_state_from_device_state(state: DeviceState) -> dict[str, Any]:
+def light_state_from_device_state(
+    state: DeviceState, *, effect: str | None = None
+) -> dict[str, Any]:
     payload: dict[str, Any] = {}
     power = _find_capability(state.capabilities, "devices.capabilities.on_off", "powerSwitch")
     if power is not None:
@@ -134,6 +136,8 @@ def light_state_from_device_state(state: DeviceState) -> dict[str, Any]:
         if kelvin > 0:
             payload["color_temp"] = int(round(1000000.0 / kelvin))
 
+    if effect:
+        payload["effect"] = effect
     return payload
 
 
@@ -163,6 +167,58 @@ def sensor_state_from_device_state(state: DeviceState) -> dict[str, Any]:
         else:
             logger.debug("Ignoring unsupported sensor capability: %s", instance)
     return payload
+
+
+def capability_entities(
+    device: Device, *, exclude: set[tuple[str, str]] | None = None
+) -> list[dict[str, Any]]:
+    entities: list[dict[str, Any]] = []
+    excluded = exclude or set()
+    for cap in device.capabilities:
+        if (cap.type, cap.instance) in excluded:
+            continue
+        params = cap.parameters or {}
+        data_type = params.get("dataType")
+
+        entity_type: str | None = None
+        if cap.type in ("devices.capabilities.on_off", "devices.capabilities.toggle"):
+            entity_type = "switch"
+        elif data_type in ("BOOL", "BOOLEAN"):
+            entity_type = "switch"
+        elif data_type == "ENUM":
+            entity_type = "select"
+        elif data_type in ("INTEGER", "FLOAT", "DOUBLE", "DECIMAL"):
+            entity_type = "number"
+        elif data_type in ("STRUCT", "STRING"):
+            entity_type = "text"
+
+        if not entity_type:
+            logger.debug("Unsupported capability type: %s (%s)", cap.type, cap.instance)
+            continue
+
+        entity: dict[str, Any] = {
+            "instance": cap.instance,
+            "capability_type": cap.type,
+            "entity_type": entity_type,
+            "data_type": data_type,
+            "parameters": params,
+        }
+
+        if entity_type == "select":
+            options = params.get("options") or []
+            entity["options"] = [opt.get("name") for opt in options if opt.get("name")]
+            entity["option_values"] = options
+        elif entity_type == "number":
+            range_info = params.get("range") or {}
+            entity["min"] = range_info.get("min")
+            entity["max"] = range_info.get("max")
+            entity["step"] = range_info.get("precision") or 1
+            if params.get("unit"):
+                entity["unit"] = params.get("unit")
+
+        entities.append(entity)
+
+    return entities
 
 
 def light_command_to_capabilities(payload: dict[str, Any]) -> list[tuple[str, str, Any]]:

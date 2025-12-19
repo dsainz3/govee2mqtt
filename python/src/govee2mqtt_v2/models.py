@@ -46,6 +46,10 @@ def _parse_capabilities(raw_caps: list[dict[str, Any]]) -> list[Capability]:
     return capabilities
 
 
+def parse_capabilities(raw_caps: list[dict[str, Any]]) -> list[Capability]:
+    return _parse_capabilities(raw_caps)
+
+
 def parse_device_list(payload: dict[str, Any]) -> list[Device]:
     data = payload.get("data")
     if data is None:

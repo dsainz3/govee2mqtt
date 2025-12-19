@@ -27,17 +27,20 @@
 - Switch: on_off without light capabilities
 - Sensor: range/property instances (temperature/humidity/co2/pm2_5/pm10/voc/aqi)
 - Binary sensor: motion/leak/contact/door when exposed by capability
+- Capability entities: select/number/switch/text for capabilities not covered by base light/switch/sensor mapping
 
 ## State Publishing
 
 - Light state payload: `state`, `brightness`, `color`, `color_temp`
 - Switch state payload: `ON` or `OFF`
 - Sensor state payload: JSON with multiple sensor values per device
+- Capability state payload: per capability instance on `cap_<instance>` topics
 
 ## Command Handling
 
 - Light commands accept HA JSON schema and translate to Platform API capability calls.
 - Switch commands accept `ON`/`OFF` and map to `powerSwitch`.
+- Capability commands accept select/number/switch/text payloads and translate to the capability API.
 - Post-command state is refreshed and published.
 
 ## Testing
